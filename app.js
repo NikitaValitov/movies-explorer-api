@@ -2,38 +2,34 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const cors = require('cors');
-const auth = require('./middlewares/auth');
+const helmet = require('helmet');
+const limiter = require('./middlewares/rateLimit');
 const router = require('./routes');
-const { createUser, login } = require('./controllers/users');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const { validationLogin, validationCreateUser } = require('./middlewares/validation');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3000, DB_ADDRESS = 'mongodb://127.0.0.1:27017/bitfilmsdb' } = process.env;
 
 const app = express();
 
 app.use(cors());
-
+app.use(helmet());
+app.use(limiter);
 app.use(express.json());
 
-mongoose.connect('mongodb://127.0.0.1:27017/bitfilmsdb');
+mongoose.connect(DB_ADDRESS);
 
 app.use(requestLogger);
 
-app.post('/signup', validationCreateUser, createUser);
-app.post('/signin', validationLogin, login);
-app.use(auth, router);
+app.use(router);
 
 app.use(errorLogger);
 
 app.use(errors());
 
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
-
-  res
-    .status(statusCode)
-    .send({ message: statusCode === 500 ? 'На сервере произошла ошибка' : message });
+  res.status(statusCode).send({ message: statusCode === 500 ? 'На сервере произошла ошибка' : message });
+  next();
 });
 
 app.listen(PORT, () => {
