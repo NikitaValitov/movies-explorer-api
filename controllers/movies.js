@@ -57,7 +57,7 @@ module.exports.deleteMovie = (req, res, next) => {
         return next(new NotFoundError('Фильм не найден.'));
       } if (req.user._id !== movie.owner.toString()) {
         return next(new ForbiddenError('Нельзя удалять фильмы, сохраненные другими пользователями.'));
-      } return movieSchema.deleteOne()
+      } return movieSchema.deleteOne(movie)
         .then(() => {
           res.status(ERROR_CODE.OK).send({ message: 'Фильм удален.' });
         });
