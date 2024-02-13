@@ -25,7 +25,9 @@ module.exports.createMovie = (req, res, next) => {
     thumbnail,
     movieId,
   } = req.body;
+
   const owner = req.user._id;
+
   movieSchema
     .create({
       country,

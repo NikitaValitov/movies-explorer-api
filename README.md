@@ -1,8 +1,5 @@
-# Бэкенд дипломной работы 
+## *Запуск Backend:*
+`npm i` — установка зависимостей
 
+`npm run start` — запускает Backend
 
-## Ссылки на проект
-
-IP 158.160.56.37
-
-Backend https://api.diploma-nik.nomoredomainsmonster.ru
